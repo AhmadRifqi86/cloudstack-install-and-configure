@@ -7,8 +7,7 @@ Apache CloudStack is an open-source cloud computing software designed to deploy 
 
 ### Architecture Reference
 
-![image](https://hackmd.io/_uploads/By0UsRg7C.png)
-
+![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/68ea9d69-1118-4500-8825-8c099f69c4ce)
 
 ### Dependencies
 
@@ -357,7 +356,8 @@ http://192.168.104.24:8080
 
 ### You should see the cloudstack dashboard
 
-![image](https://hackmd.io/_uploads/HJW5xyZ7R.png)
+![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/1d99f652-efec-4d4d-857e-dec1122ed865)
+
 
 
 
