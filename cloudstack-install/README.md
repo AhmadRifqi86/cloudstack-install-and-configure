@@ -1,4 +1,4 @@
-
+# Install and Configure Apache Cloudstack Private Cloud
 ## Introduction
 
 ### What is Cloudstack
@@ -322,7 +322,7 @@ apt-get install iptables-persistent
 #just answer yes yes
 ```
 
-This step ensuring all service port used by cloudstack are accessible
+This step ensuring all service port used by cloudstack didn't blocked by firewall and accessible by network
 
 ### Disable apparmour on libvirtd
 
