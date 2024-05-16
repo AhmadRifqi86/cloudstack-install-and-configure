@@ -22,7 +22,7 @@ Apache CloudStack is an open-source cloud computing software for creating, manag
 
 #### KVM
 
-
+KVM (Kernel-based Virtual Machine) is an open-source virtualization technology built into the Linux kernel. It allows the Linux kernel to function as a hypervisor, enabling the creation and management of virtual machines (VMs). KVM is widely used due to its efficiency, scalability, and support for a variety of guest operating systems. Cloudstack needs KVM as an abstraction layer to prevent insecure direct access to underlying hardware. KVM provide a secure method to manage and allocate hardware resources such as CPU, Storage and Network
 
 
 ## Computing Environment Setup
