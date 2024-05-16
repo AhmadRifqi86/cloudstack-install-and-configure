@@ -1,5 +1,5 @@
 # Install and Configure Apache Cloudstack Private Cloud
-          ![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/b26cb8cc-af5e-4797-b9b5-da52c311cedc)
+![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/99bef561-43e0-400d-8d90-7dba43054c20)
 
 ## Introduction
 
