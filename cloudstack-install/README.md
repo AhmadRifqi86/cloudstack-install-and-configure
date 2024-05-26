@@ -1,6 +1,12 @@
 # Install and Configure Apache Cloudstack Private Cloud
 ![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/7074f71b-6415-4646-a9c7-085ce958520d)
 
+Contributors : 
+- Ahmad Rifqi
+- Andi Farhan
+- Zuhri Bayhaqi
+- Raden Kresna
+- Nevanda Fairuz
 
 ## Introduction
 
@@ -360,6 +366,10 @@ http://192.168.104.24:8080
 ### You should see the cloudstack dashboard
 
 ![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/1d99f652-efec-4d4d-857e-dec1122ed865)
+
+### Creating Instance Using Dashboard
+
+## Multi-host Cloud Infrastructure
 
 
 
