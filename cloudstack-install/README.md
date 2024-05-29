@@ -371,6 +371,96 @@ http://192.168.104.24:8080
 
 ## Multi-host Cloud Infrastructure
 
+### Importing cloudstack repositories key
+
+```
+sudo -i
+mkdir -p /etc/apt/keyrings
+wget -O- http://packages.shapeblue.com/release.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/cloudstack.gpg > /dev/null
+echo deb [signed-by=/etc/apt/keyrings/cloudstack.gpg] http://packages.shapeblue.com/cloudstack/upstream/debian/4.18 / > /etc/apt/sources.list.d/cloudstack.list
+
+```
+
+### Installing KVM host and Cloudstack-Agent
+
+```
+apt-get install qemu-kvm cloudstack-agent
+```
+
+### Configure Qemu KVM Virtualisation Management (libvirtd
+```
+sed -i -e 's/\#vnc_listen.*$/vnc_listen = "0.0.0.0"/g' /etc/libvirt/qemu.conf
+
+# On Ubuntu 22.04, add LIBVIRTD_ARGS="--listen" to /etc/default/libvirtd instead.
+
+sed -i.bak 's/^\(LIBVIRTD_ARGS=\).*/\1"--listen"/' /etc/default/libvirtd
+
+#configure default libvirtd configuration
+
+echo 'listen_tls=0' >> /etc/libvirt/libvirtd.conf
+echo 'listen_tcp=1' >> /etc/libvirt/libvirtd.conf
+echo 'tcp_port = "16509"' >> /etc/libvirt/libvirtd.conf
+echo 'mdns_adv = 0' >> /etc/libvirt/libvirtd.conf
+echo 'auth_tcp = "none"' >> /etc/libvirt/libvirtd.conf
+
+systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket
+systemctl restart libvirtd
+```
+
+### Configuration to Support Docker Services
+```
+#on certain hosts where you may be running docker and other services, 
+#you may need to add the following in /etc/sysctl.conf
+#and then run sysctl -p: --> /etc/sysctl.conf
+
+echo "net.bridge.bridge-nf-call-arptables = 0" >> /etc/sysctl.conf
+echo "net.bridge.bridge-nf-call-iptables = 0" >> /etc/sysctl.conf
+sysctl -p
+```
+
+### Generate Unique Host ID
+```
+apt-get install uuid -y
+UUID=$(uuid)
+echo host_uuid = \"$UUID\" >> /etc/libvirt/libvirtd.conf
+systemctl restart libvirtd
+```
+
+### Disable Firewall
+```
+systemctl ufw disable
+```
+
+### Disable Apparmour on libvirtd
+```
+ln -s /etc/apparmor.d/usr.sbin.libvirtd /etc/apparmor.d/disable/
+ln -s /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper /etc/apparmor.d/disable/
+apparmor_parser -R /etc/apparmor.d/usr.sbin.libvirtd
+apparmor_parser -R /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper
+```
+
+### STORAGE SETUP for Additional PRIMARY and SECONDARY
+```
+apt-get install nfs-kernel-server quota
+echo "/export  *(rw,async,no_root_squash,no_subtree_check)" > /etc/exports
+mkdir -p /export/primary /export/secondary
+exportfs -a
+```
+
+### Configure NFS Server
+```
+sed -i -e 's/^RPCMOUNTDOPTS="--manage-gids"$/RPCMOUNTDOPTS="-p 892 --manage-gids"/g' /etc/default/nfs-kernel-server
+sed -i -e 's/^STATDOPTS=$/STATDOPTS="--port 662 --outgoing-port 2020"/g' /etc/default/nfs-common
+echo "NEED_STATD=yes" >> /etc/default/nfs-common
+sed -i -e 's/^RPCRQUOTADOPTS=$/RPCRQUOTADOPTS="-p 875"/g' /etc/default/quota
+service nfs-kernel-server restart
+```
+### Permit SSH root login
+```
+sed -i '/#PermitRootLogin prohibit-password/a PermitRootLogin yes' /etc/ssh/sshd_config
+#restart ssh service
+service ssh restart
+```
 
 
 
