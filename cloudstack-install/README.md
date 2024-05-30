@@ -462,5 +462,37 @@ sed -i '/#PermitRootLogin prohibit-password/a PermitRootLogin yes' /etc/ssh/sshd
 service ssh restart
 ```
 
+## Managing Cloud Resource Through CLI
+
+### Installing Cloudmonkey
+```
+snap install cloudmonkey
+cloudmonkey --version
+```
+
+### Configure Cloudmonkey
+```
+cloudmonkey set url [IP Address:8080]/client/api
+#example: cloudmonkey set url http://192.168.104.24:8080/client/api
+cloudmonkey set apikey [apikey]
+cloudmonkey set secretkey [secretkey]
+cloudmonkey sync
+```
+API key and secret key generated in user page
+![image](https://github.com/AhmadRifqi86/cloudstack-install-and-configure/assets/111260795/706b1ffa-926e-4250-bc0c-de7b1c3acd85)
+
+### Create an instance
+```
+cloudmonkey list serverofferings | grep id
+cloudmonkey list zones |grep id
+cloudmonkey list templates templatefilter=all | grep id
+
+cloudmonkey deploy virtualmachine
+```
+
+
+
+
+
 
 
