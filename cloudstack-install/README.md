@@ -5,7 +5,7 @@ Contributors :
 - Ahmad Rifqi
 - Andi Farhan
 - Zuhri Bayhaqi
-- Raden Kresna
+- Raden Bagus Senopati Kresna
 - Nevanda Fairuz
 
 ## Introduction
@@ -62,6 +62,13 @@ Public IP :
 cd /etc/netplan
 sudo nano ./0*.yaml
 ```
+```
+'cd /etc/netplan' 
+This command changes the current directory to /etc/netplan
+
+'sudo nano ./0*.yaml' 
+This command opens all YAML configuration files in the current directory
+```
 
 The opened file will look like this:
 ```
@@ -111,6 +118,21 @@ sudo -i
 netplan generate
 netplan apply
 reboot
+```
+
+```
+'sudo -i' 
+This command opens a new shell with root privileges
+
+'netplan generate' 
+This command generates the configuration files for the renderer from the netplan configuration files.
+
+'netplan apply' 
+This command applies the network configuration to the system.
+
+'reboot' 
+This command reboots the system.
+
 ```
 
 > Note : You may encounter some error during this step, make sure you use "space" instead of "tab" when modifying network configuration file
@@ -187,8 +209,23 @@ sudo -i
 mkdir -p /etc/apt/keyrings
 wget -O- http://packages.shapeblue.com/release.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/cloudstack.gpg > /dev/null
 echo deb [signed-by=/etc/apt/keyrings/cloudstack.gpg] http://packages.shapeblue.com/cloudstack/upstream/debian/4.18 / > /etc/apt/sources.list.d/cloudstack.list
+```
 
 ```
+'mkdir -p /etc/apt/keyrings' 
+This command creates a new directory named keyrings in the /etc/apt directory.
+
+'wget -O- http://packages.shapeblue.com/release.asc' 
+Downloads the file at the given URL and outputs it to the standard output.
+
+'gpg --dearmor' 
+Takes the input from the previous command (the downloaded file) and converts it from ASCII armored format to binary format.
+
+'sudo tee /etc/apt/keyrings/cloudstack.gpg > /dev/null' 
+Writes the output from the previous command to the file /etc/apt/keyrings/cloudstack.gpg with root privileges.
+
+```
+
 
 ### Installing Cloudstack and Mysql Server
 
@@ -240,6 +277,12 @@ mkdir -p /export/primary /export/secondary
 exportfs -a
 ```
 
+```
+'echo "/export  *(rw,async,no_root_squash,no_subtree_check)" > /etc/exports' 
+This command writes the string /export  *(rw,async,no_root_squash,no_subtree_check) to the file /etc/exports.
+
+```
+
 ### Configure NFS Server
 
 ```
@@ -248,6 +291,23 @@ sed -i -e 's/^STATDOPTS=$/STATDOPTS="--port 662 --outgoing-port 2020"/g' /etc/de
 echo "NEED_STATD=yes" >> /etc/default/nfs-common
 sed -i -e 's/^RPCRQUOTADOPTS=$/RPCRQUOTADOPTS="-p 875"/g' /etc/default/quota
 service nfs-kernel-server restart
+```
+
+```
+'sed -i -e 's/^RPCMOUNTDOPTS="--manage-gids"$/RPCMOUNTDOPTS="-p 892 --manage-gids"/g' /etc/default/nfs-kernel-server'
+This command uses the sed (stream editor) command to search for the line RPCMOUNTDOPTS="--manage-gids" in the file /etc/default/nfs-kernel-server and replace it with RPCMOUNTDOPTS="-p 892 --manage-gids". The -i option tells sed to edit files in place (i.e., save the changes to the original file).
+
+'sed -i -e 's/^STATDOPTS=$/STATDOPTS="--port 662 --outgoing-port 2020"/g' /etc/default/nfs-common'
+This command uses sed to search for the line STATDOPTS= in the file /etc/default/nfs-common and replace it with STATDOPTS="--port 662 --outgoing-port 2020".
+
+'echo "NEED_STATD=yes" >> /etc/default/nfs-common'
+This command appends the line NEED_STATD=yes to the end of the file /etc/default/nfs-common. The >> operator in bash is used to append output to a file.
+
+'sed -i -e 's/^RPCRQUOTADOPTS=$/RPCRQUOTADOPTS="-p 875"/g' /etc/default/quota'
+This command uses sed to search for the line RPCRQUOTADOPTS= in the file /etc/default/quota and replace it with RPCRQUOTADOPTS="-p 875".
+
+'service nfs-kernel-server restart'
+This command restarts the nfs-kernel-server service. This is often necessary after making changes to its configuration files, to ensure the changes take effect.
 ```
 
 ## Configure Cloudstack Host with KVM Hypervisor
@@ -270,6 +330,14 @@ sed -i -e 's/\#vnc_listen.*$/vnc_listen = "0.0.0.0"/g' /etc/libvirt/qemu.conf
 sed -i.bak 's/^\(LIBVIRTD_ARGS=\).*/\1"--listen"/' /etc/default/libvirtd
 ```
 
+```
+'sed -i -e 's/\#vnc_listen.*$/vnc_listen = "0.0.0.0"/g' /etc/libvirt/qemu.conf'
+This command uses the sed (stream editor) command to search for lines in the file /etc/libvirt/qemu.conf that start with #vnc_listen and replace them with vnc_listen = "0.0.0.0". The -i option tells sed to edit files in place (i.e., save the changes to the original file). The 0.0.0.0 address is a special IP address used in network programming to specify all IP addresses on the local machine.
+
+'sed -i.bak 's/^\(LIBVIRTD_ARGS=\).*/\1"--listen"/' /etc/default/libvirtd'
+This command uses sed to search for lines in the file /etc/default/libvirtd that start with LIBVIRTD_ARGS= and replace them with LIBVIRTD_ARGS="--listen". The -i.bak option tells sed to edit files in place and make a backup of the original file with the .bak extension.
+```
+
 #### Add some lines
 
 ```
@@ -285,6 +353,14 @@ echo 'auth_tcp = "none"' >> /etc/libvirt/libvirtd.conf
 ```
 systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket
 systemctl restart libvirtd
+```
+
+```
+'systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket'
+ This command uses systemctl, the system and service manager for Linux, to mask several socket units related to the libvirtd service. Masking a unit in systemd effectively disables it and makes it impossible to start it manually or allow other services to start it. In this case, the command is masking several sockets that libvirtd uses to communicate with other processes. This might be done to prevent libvirtd from accepting connections over these sockets.
+
+'systemctl restart libvirtd'
+This command uses systemctl to restart the libvirtd service. This is often necessary after making changes to a service’s configuration or its related units (like sockets), to ensure the changes take effect.
 ```
 
 libvirtd is a daemon that provides management of virtual machines (VMs), virtual networks, and storage for various virtualization technologies, such as KVM, QEMU, Xen, and others. It is part of the libvirt project, which offers a toolkit for managing virtualization platforms. The primary purpose of libvirtd is to provide a consistent and secure API for managing VMs and associated resources, regardless of the underlying virtualization technology.
@@ -342,6 +418,23 @@ apparmor_parser -R /etc/apparmor.d/usr.sbin.libvirtd
 apparmor_parser -R /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper
 ```
 
+```
+'ln -s /etc/apparmor.d/usr.sbin.libvirtd /etc/apparmor.d/disable/'
+This command creates a symbolic link (a type of file that points to another file or directory) from /etc/apparmor.d/usr.sbin.libvirtd to /etc/apparmor.d/disable/. This effectively disables the AppArmor profile for usr.sbin.libvirtd.
+
+'ln -s /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper /etc/apparmor.d/disable/'
+This command creates a symbolic link from /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper to /etc/apparmor.d/disable/, disabling the AppArmor profile for usr.lib.libvirt.virt-aa-helper.
+
+'apparmor_parser -R /etc/apparmor.d/usr.sbin.libvirtd'
+This command uses the apparmor_parser utility to remove the AppArmor profile for usr.sbin.libvirtd from the kernel. The -R option tells apparmor_parser to remove a profile.
+
+'apparmor_parser -R /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper'
+This command removes the AppArmor profile for usr.lib.libvirt.virt-aa-helper from the kernel.
+
+```
+AppArmor, which stands for Application Armor, is a Linux Security Module (LSM) that provides mandatory access control (MAC) for the operating system. It’s designed to restrict applications’ capabilities and permissions with profiles that are set per-program.
+
+
 ### Launch management Server
 
 ```
@@ -349,6 +442,19 @@ cloudstack-setup-management
 systemctl status cloudstack-management
 tail -f /var/log/cloudstack/management/management-server.log #if you want to troubleshoot 
 #wait until all services (components) running successfully
+```
+
+```
+'cloudstack-setup-management'
+This command is used to set up the management server for Apache CloudStack, an open-source cloud computing software for creating, managing, and deploying infrastructure cloud services. It configures the database connection, sets up the management server’s IP address, and starts the management server.
+
+'systemctl status cloudstack-management'
+This command uses systemctl, the system and service manager for Linux, to display the status of the cloudstack-management service. It shows whether the service is running or not, and displays the most recent log entries. You can use this command to check if the CloudStack management server is running properly.
+
+'tail -f /var/log/cloudstack/management/management-server.log #if you want to troubleshoot'
+This command displays the end of the CloudStack management server log file and then outputs appended data as the file grows. This is often used to monitor the log file in real time. It can be useful for troubleshooting if you’re having issues with the CloudStack management server. The -f option tells tail to keep the file open and display new lines as they are added.
+
+
 ```
 
 ### Open web browser and type
@@ -461,6 +567,3 @@ sed -i '/#PermitRootLogin prohibit-password/a PermitRootLogin yes' /etc/ssh/sshd
 #restart ssh service
 service ssh restart
 ```
-
-
-
