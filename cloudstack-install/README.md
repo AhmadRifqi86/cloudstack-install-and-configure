@@ -63,10 +63,10 @@ cd /etc/netplan
 sudo nano ./0*.yaml
 ```
 ```
-'cd /etc/netplan' 
+`cd /etc/netplan`
 This command changes the current directory to /etc/netplan
 
-'sudo nano ./0*.yaml' 
+`sudo nano ./0*.yaml` 
 This command opens all YAML configuration files in the current directory
 ```
 
