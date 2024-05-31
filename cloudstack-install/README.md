@@ -107,13 +107,16 @@ network:
 ### Apply Network Configuration
 
 ```
-sudo -i
-netplan generate
-netplan apply
-reboot
+sudo -i  #open new shell with root privileges
+netplan generate #generate config file for the renderer
+netplan apply  #applies network configuration to the system
+reboot #reboot the system
 ```
 
 > Note : You may encounter some error during this step, make sure you use "space" instead of "tab" when modifying network configuration file
+> Note : To check whether your network configuration already applied or not, use ifconfig command and look for interface "br0", make sure the address is equal with the one you configured before
+
+
 
 ### Test the Network, make sure the configuration applied
 
@@ -176,6 +179,11 @@ service ssh restart
 #or
 systemctl restart sshd.service
 ```
+### Check the SSH Configuration
+```
+nano /etc/ssh/sshd_config
+```
+Find the line 'PermitRootLogin' make sure it set to 'yes'
 
 ## Cloudstack Installation (Controller and Compute Node at the Same Host)
 
@@ -184,10 +192,24 @@ systemctl restart sshd.service
 
 ```
 sudo -i
-mkdir -p /etc/apt/keyrings
+mkdir -p /etc/apt/keyrings 
 wget -O- http://packages.shapeblue.com/release.asc | gpg --dearmor | sudo tee /etc/apt/keyrings/cloudstack.gpg > /dev/null
 echo deb [signed-by=/etc/apt/keyrings/cloudstack.gpg] http://packages.shapeblue.com/cloudstack/upstream/debian/4.18 / > /etc/apt/sources.list.d/cloudstack.list
+```
 
+* The first line is to create a directory to store cloudstack public key
+* wget -O to download the given URL and redirect the output to 'gpg --dearmor' command
+* 'gpg --dearmor' command will convert from ASCII armored to binary format
+* 'sudo tee' command will redirect 'gpg --dearmor' command to file /etc/apt/keyrings/cloudstack.gpg
+
+### Check the added repositories
+```
+nano /etc/apt/sources.list.d/cloudstack.list
+```
+make sure you see this line at the last line
+
+```
+deb [signed-by=/etc/apt/keyrings/cloudstack.gpg] http://packages.shapeblue.com/cloudstack/upstream/debian/4.18 /
 ```
 
 ### Installing Cloudstack and Mysql Server
@@ -220,10 +242,15 @@ binlog-format = 'ROW'
 ```
 
 #### Restart mysql service
-
 ```
 systemctl restart mysql
 ```
+
+#### Check mysql service status
+```
+systemctl status mysql
+```
+You should see word 'active' in the output
 
 ### Deploy Database as Root and Then Create "cloud" User with Password "cloud" too
 
@@ -248,6 +275,24 @@ sed -i -e 's/^STATDOPTS=$/STATDOPTS="--port 662 --outgoing-port 2020"/g' /etc/de
 echo "NEED_STATD=yes" >> /etc/default/nfs-common
 sed -i -e 's/^RPCRQUOTADOPTS=$/RPCRQUOTADOPTS="-p 875"/g' /etc/default/quota
 service nfs-kernel-server restart
+```
+Explanation
+
+```
+`sed -i -e 's/^RPCMOUNTDOPTS="--manage-gids"$/RPCMOUNTDOPTS="-p 892 --manage-gids"/g' /etc/default/nfs-kernel-server`
+This command uses the sed (stream editor) command to search for the line RPCMOUNTDOPTS="--manage-gids" in the file /etc/default/nfs-kernel-server and replace it with RPCMOUNTDOPTS="-p 892 --manage-gids". The -i option tells sed to edit files in place (i.e., save the changes to the original file).
+
+`sed -i -e 's/^STATDOPTS=$/STATDOPTS="--port 662 --outgoing-port 2020"/g' /etc/default/nfs-common`
+This command uses sed to search for the line STATDOPTS= in the file /etc/default/nfs-common and replace it with STATDOPTS="--port 662 --outgoing-port 2020".
+
+`echo "NEED_STATD=yes" >> /etc/default/nfs-common`
+This command appends the line NEED_STATD=yes to the end of the file /etc/default/nfs-common. The >> operator in bash is used to append output to a file.
+
+`sed -i -e 's/^RPCRQUOTADOPTS=$/RPCRQUOTADOPTS="-p 875"/g' /etc/default/quota`
+This command uses sed to search for the line RPCRQUOTADOPTS= in the file /etc/default/quota and replace it with RPCRQUOTADOPTS="-p 875".
+
+`service nfs-kernel-server restart`
+This command will restart NFS Service
 ```
 
 ## Configure Cloudstack Host with KVM Hypervisor
