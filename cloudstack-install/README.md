@@ -315,6 +315,15 @@ sed -i -e 's/\#vnc_listen.*$/vnc_listen = "0.0.0.0"/g' /etc/libvirt/qemu.conf
 sed -i.bak 's/^\(LIBVIRTD_ARGS=\).*/\1"--listen"/' /etc/default/libvirtd
 ```
 
+Explanation
+```
+`sed -i -e 's/\#vnc_listen.*$/vnc_listen = "0.0.0.0"/g' /etc/libvirt/qemu.conf`
+This command uses the sed (stream editor) command to search for lines in the file /etc/libvirt/qemu.conf that start with #vnc_listen and replace them with vnc_listen = "0.0.0.0". The -i option tells sed to edit files in place (i.e., save the changes to the original file). The 0.0.0.0 address is a special IP address used in network programming to specify all IP addresses on the local machine.
+
+`sed -i.bak 's/^\(LIBVIRTD_ARGS=\).*/\1"--listen"/' /etc/default/libvirtd`
+This command uses sed to search for lines in the file /etc/default/libvirtd that start with LIBVIRTD_ARGS= and replace them with LIBVIRTD_ARGS="--listen". The -i.bak option tells sed to edit files in place and make a backup of the original file with the .bak extension.
+```
+
 #### Add some lines
 
 ```
@@ -324,12 +333,38 @@ echo 'tcp_port = "16509"' >> /etc/libvirt/libvirtd.conf
 echo 'mdns_adv = 0' >> /etc/libvirt/libvirtd.conf
 echo 'auth_tcp = "none"' >> /etc/libvirt/libvirtd.conf
 ```
+Explanation
+```
+echo 'listen_tls=0' >> /etc/libvirt/libvirtd.conf
+# disable TLS listening on libvirt daemon
+
+echo 'listen_tcp=1' >> /etc/libvirt/libvirtd.conf
+# enable TCP listening on libvirt daemon
+
+echo 'tcp_port = "16509"' >> /etc/libvirt/libvirtd.conf
+# specify a port where daemon will listen for a TCP connection
+
+echo 'mdns_adv = 0' >> /etc/libvirt/libvirtd.conf
+# disable multicast DNS, libvirtd service will not found through nDNS
+
+echo 'auth_tcp = "none"' >> /etc/libvirt/libvirtd.conf
+# disable authentication for TCP connection to libvirt daemon
+```
 
 #### Restart libvirtd
 
 ```
 systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket
 systemctl restart libvirtd
+```
+
+Command Explanation
+```
+`systemctl mask libvirtd.socket libvirtd-ro.socket libvirtd-admin.socket libvirtd-tls.socket libvirtd-tcp.socket`
+ This command uses systemctl, the system and service manager for Linux, to mask several socket units related to the libvirtd service. Masking a unit in systemd effectively disables it and makes it impossible to start it manually or allow other services to start it. In this case, the command is masking several sockets that libvirtd uses to communicate with other processes. This might be done to prevent libvirtd from accepting connections over these sockets.
+
+`systemctl restart libvirtd`
+This command uses systemctl to restart the libvirtd service. This is often necessary after making changes to a service’s configuration or its related units (like sockets), to ensure the changes take effect.
 ```
 
 libvirtd is a daemon that provides management of virtual machines (VMs), virtual networks, and storage for various virtualization technologies, such as KVM, QEMU, Xen, and others. It is part of the libvirt project, which offers a toolkit for managing virtualization platforms. The primary purpose of libvirtd is to provide a consistent and secure API for managing VMs and associated resources, regardless of the underlying virtualization technology.
@@ -387,6 +422,23 @@ apparmor_parser -R /etc/apparmor.d/usr.sbin.libvirtd
 apparmor_parser -R /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper
 ```
 
+Explanation
+
+```
+`ln -s /etc/apparmor.d/usr.sbin.libvirtd /etc/apparmor.d/disable/`
+This command creates a symbolic link (a type of file that points to another file or directory) from /etc/apparmor.d/usr.sbin.libvirtd to /etc/apparmor.d/disable/. This effectively disables the AppArmor profile for usr.sbin.libvirtd.
+
+`ln -s /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper /etc/apparmor.d/disable/`
+This command creates a symbolic link from /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper to /etc/apparmor.d/disable/, disabling the AppArmor profile for usr.lib.libvirt.virt-aa-helper.
+
+`apparmor_parser -R /etc/apparmor.d/usr.sbin.libvirtd`
+This command uses the apparmor_parser utility to remove the AppArmor profile for usr.sbin.libvirtd from the kernel. The -R option tells apparmor_parser to remove a profile.
+
+`apparmor_parser -R /etc/apparmor.d/usr.lib.libvirt.virt-aa-helper`
+This command removes the AppArmor profile for usr.lib.libvirt.virt-aa-helper from the kernel.
+
+```
+
 ### Launch management Server
 
 ```
@@ -394,6 +446,19 @@ cloudstack-setup-management
 systemctl status cloudstack-management
 tail -f /var/log/cloudstack/management/management-server.log #if you want to troubleshoot 
 #wait until all services (components) running successfully
+```
+
+Explanation
+```
+`cloudstack-setup-management`
+This command is used to set up the management server for Apache CloudStack, an open-source cloud computing software for creating, managing, and deploying infrastructure cloud services. It configures the database connection, sets up the management server’s IP address, and starts the management server.
+
+`systemctl status cloudstack-management`
+This command uses systemctl, the system and service manager for Linux, to display the status of the cloudstack-management service. It shows whether the service is running or not, and displays the most recent log entries. You can use this command to check if the CloudStack management server is running properly.
+
+`tail -f /var/log/cloudstack/management/management-server.log #if you want to troubleshoot`
+This command displays the end of the CloudStack management server log file and then outputs appended data as the file grows. This is often used to monitor the log file in real time. It can be useful for troubleshooting if you’re having issues with the CloudStack management server. The -f option tells tail to keep the file open and display new lines as they are added.
+
 ```
 
 ### Open web browser and type
