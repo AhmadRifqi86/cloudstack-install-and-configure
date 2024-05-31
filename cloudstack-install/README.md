@@ -377,6 +377,10 @@ echo "net.bridge.bridge-nf-call-arptables = 0" >> /etc/sysctl.conf
 echo "net.bridge.bridge-nf-call-iptables = 0" >> /etc/sysctl.conf
 sysctl -p
 ```
+Explanation
+```
+ARP and IP packet will not processed by arptable and iptable
+```
 
 ### Generate Unique Host ID
 
@@ -412,6 +416,16 @@ apt-get install iptables-persistent
 ```
 
 This step ensuring all service port used by cloudstack didn't blocked by firewall and accessible by network
+
+Explanation
+```
+'-A input' will append the rule to INPUT rule chain
+'-s $NETWORK' specifying the packet source, in this case the source is network 192.168.101.0/24
+'-m state' using state module to match packet state, '--state NEW' means rules applied only for packet that start new connection
+'-p udp/tcp --dport [PORT NUMBER]' apply rule for specific protocol and destination port number
+'-j ACCEPT' accepting packet matched with the rule  
+
+```
 
 ### Disable apparmour on libvirtd
 
