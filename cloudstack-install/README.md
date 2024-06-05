@@ -611,8 +611,12 @@ cloudmonkey list serverofferings | grep id
 cloudmonkey list zones |grep id
 cloudmonkey list templates templatefilter=all | grep id
 
-cloudmonkey deploy virtualmachine
+cloudmonkey deploy virtualmachine templateid=[TEMPLATE-ID] serviceofferingid=[SERVICE-ID] zoneid=[ZONE-ID]
+
+#Example
+cloudmonkey deploy virtualmachine templateid=648ea3c5-8015-4bff-be2d-f2f4e4e7ae43 serviceofferingid=ef3b04fa-52a2-4eee-bcd2-fa7de438caae networkids=2ab17815-dae1-4664-a991-bb4a5ad3346a zoneid=a6afefa1-c770-42d5-b5fb-ab328d814bbd diskofferingid=e28d6137-4a89-4e04-9a17-73100c318db0
 ```
+
 
 
 
