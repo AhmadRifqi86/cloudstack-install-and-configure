@@ -618,6 +618,10 @@ cloudmonkey deploy virtualmachine templateid=648ea3c5-8015-4bff-be2d-f2f4e4e7ae4
 ```
 
 
+## Complete Video Tutorial
+
+https://youtu.be/txQTvnF9jk8
+
 
 
 
